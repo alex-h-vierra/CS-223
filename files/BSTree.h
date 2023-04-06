@@ -86,6 +86,50 @@ private:
     */
     void remove(const KeyComparable & key, BinaryNode ** t) {
         //TODO write for lab 2
+        BinaryNode *temp = find_Private(key, this->root);
+        if (temp == nullptr){
+            return;
+        }
+        BinaryNode *iterator = this->root;
+        BinaryNode *max = this->findMax_Private(iterator);
+        while (iterator != nullptr)
+        {
+            if (iterator == temp)
+            {
+                iterator = max;
+                iterator->left = temp->left;
+                iterator->right = temp->right;
+                delete[] temp;
+                return;
+            }
+            else if (iterator->key > temp->key)
+            {
+                if (iterator->left == temp)
+                {
+                    iterator->left = this->findMin_Private(this->root);
+                    iterator = iterator->left;
+                    iterator->left = temp->left;
+                    iterator->right = temp->right;
+                    delete[] temp;
+                    cout << "found key: " << temp->key;
+                    return;
+                }
+                iterator = iterator->left;
+            }
+            else if (iterator->key <= temp->key)
+            {
+                if (iterator->left == temp)
+                {
+                    iterator->right = this->findMax_Private(this->root);
+                    iterator = iterator->right;
+                    iterator->left = temp->left;
+                    iterator->right = temp->right;
+                    delete[] temp;
+                    return;
+                }
+                iterator = iterator->right;
+            }
+        }
     }
 
     /*
@@ -93,22 +137,7 @@ private:
     */
     BinaryNode * findMin_Private(BinaryNode *t) const {
         //DONE write for lab 2
-        while (t != nullptr)
-        {
-            if (t->left == nullptr)
-            {
-                return t;
-            }
-            t = t->left;
-        }
-        return t;
-    }
-
-    /*
-    * Finds the node with the largest element in the subtree
-    */
-    BinaryNode * findMax_Private(BinaryNode *t) const {
-        //DONE write for lab 2
+        t = t->left;
         while (t != nullptr)
         {
             if (t->right == nullptr)
@@ -121,30 +150,49 @@ private:
     }
 
     /*
+    * Finds the node with the largest element in the subtree
+    */
+    BinaryNode * findMax_Private(BinaryNode *t) const {
+        //DONE write for lab 2
+        t = t->right;
+        while (t != nullptr)
+        {
+            if (t->left == nullptr)
+            {
+                return t;
+            }
+            t = t->left;
+        }
+        return t;
+    }
+
+    /*
     * Finds the node with that satisfies equality for the element
     */
     BinaryNode *  find_Private(const KeyComparable & key, BinaryNode *node) const {
+        //TODO find_private
+        BinaryNode *temp;
         if (key == node->key)
         {
-            return node;
+            temp = node;
+            return temp;
         }
         else if (key > node->key)
         {
-            if (node->left == nullptr)
+            if (node->right != nullptr)
             {
-                return nullptr;
+                return find_Private(key,node->right);
             }
-            find_Private(key,node->left);
+            return nullptr;
         }
         else if (key < node->key)
         {
-            if (node->right == nullptr)
+            if (node->left != nullptr)
             {
-                return nullptr;
+                return (find_Private(key, node->left));
             }
-            find_Private(key, node->right);
+            return nullptr;
         }
-        return nullptr;
     }
 
     /*
@@ -214,8 +262,14 @@ public:
     * returns false if it was not
     */
     bool find(const KeyComparable & key , Value & founditem) const {
-        //DONE calls private find lab 1
-        find_Private(key, this->root);
+        //TODO calls private find lab 1
+        BinaryNode *temp = find_Private(key, this->root);
+        if (temp != nullptr)
+        {
+            founditem = temp->value;
+            return true;
+        }
+        return false;
     }
 
     /*
@@ -264,8 +318,9 @@ public:
     * Removes the nodes if it contains the given item
     */
     void remove(const KeyComparable & key) {
-        //DONE calls private remove
-        remove(key,**this);
+        //TODO calls private remove
+        BinaryNode **temp = new BinarySearchTree::BinaryNode *;
+        remove(key,temp);
     }
 
 };  // end of BinarySearchTree class
