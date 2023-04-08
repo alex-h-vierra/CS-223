@@ -87,45 +87,69 @@ private:
     void remove(const KeyComparable & key, BinaryNode ** t) {
         //TODO write for lab 2
         BinaryNode *temp = find_Private(key, this->root);
-        if (temp == nullptr){
+        BinaryNode *iterator = this->root;
+        BinaryNode *nodeHolder;
+        if (temp == nullptr)
+        {
             return;
         }
-        BinaryNode *iterator = this->root;
-        BinaryNode *max = this->findMax_Private(iterator);
         while (iterator != nullptr)
         {
             if (iterator == temp)
             {
-                iterator = max;
-                iterator->left = temp->left;
-                iterator->right = temp->right;
-                delete[] temp;
                 return;
             }
             else if (iterator->key > temp->key)
             {
                 if (iterator->left == temp)
                 {
-                    iterator->left = this->findMin_Private(this->root);
-                    iterator = iterator->left;
-                    iterator->left = temp->left;
-                    iterator->right = temp->right;
-                    delete[] temp;
-                    cout << "found key: " << temp->key;
-                    return;
+                    if (temp->left == nullptr && temp->right == nullptr)
+                    {
+                        delete[] temp;
+                        iterator->left = nullptr;
+                        return;
+                    }
+                    else if (temp->left != nullptr && temp->right == nullptr)
+                    {
+                        nodeHolder = temp->left;
+                        delete[] temp;
+                        iterator->left = nodeHolder;
+                        return;
+                    }
+                    else if (temp->left == nullptr && temp->right != nullptr)
+                    {
+                        nodeHolder = temp->right;
+                        delete[] temp;
+                        iterator->left = nodeHolder;
+                        return;
+                    }
                 }
                 iterator = iterator->left;
             }
-            else if (iterator->key <= temp->key)
+            else if (iterator->key < temp->key)
             {
-                if (iterator->left == temp)
+                if (iterator->right == temp)
                 {
-                    iterator->right = this->findMax_Private(this->root);
-                    iterator = iterator->right;
-                    iterator->left = temp->left;
-                    iterator->right = temp->right;
-                    delete[] temp;
-                    return;
+                    if (temp->left == nullptr && temp->right == nullptr)
+                    {
+                        delete[] temp;
+                        iterator->left = nullptr;
+                        return;
+                    }
+                    else if (temp->left != nullptr && temp->right == nullptr)
+                    {
+                        nodeHolder = temp->left;
+                        delete[] temp;
+                        iterator->right = nodeHolder;
+                        return;
+                    }
+                    else if (temp->left == nullptr && temp->right != nullptr)
+                    {
+                        nodeHolder = temp->right;
+                        delete[] temp;
+                        iterator->right = nodeHolder;
+                        return;
+                    }
                 }
                 iterator = iterator->right;
             }
@@ -222,7 +246,7 @@ private:
         {
             printTree_Private(t->left, out);
         }
-        cout << t->key << endl;
+        cout << t->key << " ";
         if (t->right != nullptr)
         {
             printTree_Private(t->right,out);
@@ -319,7 +343,7 @@ public:
     */
     void remove(const KeyComparable & key) {
         //TODO calls private remove
-        BinaryNode **temp = new BinarySearchTree::BinaryNode *;
+        BinaryNode **temp;
         remove(key,temp);
     }
 
