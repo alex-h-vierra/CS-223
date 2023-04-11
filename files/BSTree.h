@@ -3,8 +3,8 @@
 
 using namespace std;
 
-template <typename KeyComparable, typename Value >
-class BinarySearchTree : BSTInterface < KeyComparable, Value >  {
+template<typename KeyComparable, typename Value>
+class BinarySearchTree : BSTInterface<KeyComparable, Value> {
 private:
 
     /*
@@ -17,17 +17,17 @@ private:
 
         BinaryNode *left;
         BinaryNode *right;
+
         //Initialize class members from constructor arguments
         //by using a member initializer list.
         //This method uses direct initialization, which is more
         //efficient than using assignment operators inside the constructor body.
-        BinaryNode( KeyComparable & key, Value & value, BinaryNode *left = nullptr, BinaryNode *right = nullptr)
-                : value{ value }, left{ left }, right{ right } , key{ key }
-        {
+        BinaryNode(KeyComparable &key, Value &value, BinaryNode *left = nullptr, BinaryNode *right = nullptr)
+                : value{value}, left{left}, right{right}, key{key} {
 
         }
 
-    };	// end of BinaryNode class
+    };    // end of BinaryNode class
 
     // the root node of the tree
     BinaryNode *root = nullptr;
@@ -40,36 +40,29 @@ private:
     *     All nodes to the left will be less
     *     All nodes to the right will be greater
     */
-    bool insert_Private(Value item, KeyComparable key, BinaryNode * node) {
+    bool insert_Private(Value item, KeyComparable key, BinaryNode *node) {
         //DONE write for lab 1
-        node = new BinaryNode(key,item);
+        node = new BinaryNode(key, item);
         BinaryNode *iterator = this->root;
-        if (this->root == nullptr)
-        {
+        if (this->root == nullptr) {
             this->root = node;
             return true;
         }
-        while (iterator != nullptr)
-        {
-            if (iterator->key == node->key)
-            {
+        while (iterator != nullptr) {
+            if (iterator->key == node->key) {
                 cout << "Node is already inserted" << endl;
                 delete[] node;
                 return false;
             }
-            else if (iterator->key > node->key)
-            {
-                if (iterator->left == nullptr)
-                {
+            else if (iterator->key > node->key) {
+                if (iterator->left == nullptr) {
                     iterator->left = node;
                     return true;
                 }
                 iterator = iterator->left;
             }
-            else if (iterator->key < node->key)
-            {
-                if (iterator->right == nullptr)
-                {
+            else if (iterator->key < node->key) {
+                if (iterator->right == nullptr) {
                     iterator->right = node;
                     return true;
                 }
@@ -84,74 +77,98 @@ private:
     *     All nodes to the left will be less
     *     All nodes to the right will be greater
     */
-    void remove(const KeyComparable & key, BinaryNode ** t) {
+    void remove(const KeyComparable &key, BinaryNode *&t) {
         //TODO write for lab 2
         BinaryNode *temp = find_Private(key, this->root);
-        BinaryNode *iterator = this->root;
         BinaryNode *nodeHolder;
-        if (temp == nullptr)
-        {
+        BinaryNode *nodeHolder2;
+        BinaryNode *max = this->findMax_Private(this->root);
+        if (temp == nullptr) {
             return;
         }
-        while (iterator != nullptr)
+        while (t != nullptr)
         {
-            if (iterator == temp)
+            if (t == temp)
             {
+                BinaryNode *maxHold = new BinaryNode(max->key, max->value, max);
+                remove(max->key);
+                *maxHold->left = *t->left;
+                *maxHold->right = *t->right;
+                *t = *maxHold;
+                delete[] temp;
                 return;
             }
-            else if (iterator->key > temp->key)
+            else if (t->key > temp->key)
             {
-                if (iterator->left == temp)
+                if (t->left == temp)
                 {
                     if (temp->left == nullptr && temp->right == nullptr)
                     {
                         delete[] temp;
-                        iterator->left = nullptr;
+                        t->left = nullptr;
                         return;
                     }
                     else if (temp->left != nullptr && temp->right == nullptr)
                     {
                         nodeHolder = temp->left;
                         delete[] temp;
-                        iterator->left = nodeHolder;
+                        *t->left = *nodeHolder;
                         return;
                     }
                     else if (temp->left == nullptr && temp->right != nullptr)
                     {
                         nodeHolder = temp->right;
                         delete[] temp;
-                        iterator->left = nodeHolder;
+                        t->left = nodeHolder;
+                        return;
+                    }
+                    else if (temp->left != nullptr && temp->right != nullptr)
+                    {
+                        nodeHolder = temp->left;
+                        nodeHolder2 = temp->right;
+                        delete[] temp;
+                        t->left = nodeHolder;
+                        nodeHolder->right = nodeHolder2;
                         return;
                     }
                 }
-                iterator = iterator->left;
+                t = t->left;
             }
-            else if (iterator->key < temp->key)
+            else if (t->key < temp->key)
             {
-                if (iterator->right == temp)
+                if (t->right == temp)
                 {
                     if (temp->left == nullptr && temp->right == nullptr)
                     {
                         delete[] temp;
-                        iterator->left = nullptr;
+                        t->right = nullptr;
                         return;
                     }
                     else if (temp->left != nullptr && temp->right == nullptr)
                     {
                         nodeHolder = temp->left;
                         delete[] temp;
-                        iterator->right = nodeHolder;
+                        t->right = nodeHolder;
                         return;
                     }
                     else if (temp->left == nullptr && temp->right != nullptr)
                     {
                         nodeHolder = temp->right;
                         delete[] temp;
-                        iterator->right = nodeHolder;
+                        t->right = nodeHolder;
+                        return;
+                    }
+                    else if (temp->left != nullptr && temp->right != nullptr)
+                    {
+                        nodeHolder = temp->right;
+                        nodeHolder2 = temp->left;
+                        delete[] temp;
+                        t->right = nodeHolder;
+                        nodeHolder->left = nodeHolder2;
                         return;
                     }
                 }
-                iterator = iterator->right;
+                t = t->right;
             }
         }
     }
@@ -159,13 +176,11 @@ private:
     /*
     * Finds the node with the smallest element in the subtree
     */
-    BinaryNode * findMin_Private(BinaryNode *t) const {
+    BinaryNode *findMin_Private(BinaryNode *t) const {
         //DONE write for lab 2
         t = t->left;
-        while (t != nullptr)
-        {
-            if (t->right == nullptr)
-            {
+        while (t != nullptr) {
+            if (t->right == nullptr) {
                 return t;
             }
             t = t->right;
@@ -176,13 +191,11 @@ private:
     /*
     * Finds the node with the largest element in the subtree
     */
-    BinaryNode * findMax_Private(BinaryNode *t) const {
+    BinaryNode *findMax_Private(BinaryNode *t) const {
         //DONE write for lab 2
         t = t->right;
-        while (t != nullptr)
-        {
-            if (t->left == nullptr)
-            {
+        while (t != nullptr) {
+            if (t->left == nullptr) {
                 return t;
             }
             t = t->left;
@@ -193,26 +206,21 @@ private:
     /*
     * Finds the node with that satisfies equality for the element
     */
-    BinaryNode *  find_Private(const KeyComparable & key, BinaryNode *node) const {
+    BinaryNode *find_Private(const KeyComparable &key, BinaryNode *node) const {
         //TODO find_private
         BinaryNode *temp;
-        if (key == node->key)
-        {
+        if (key == node->key) {
             temp = node;
             return temp;
         }
-        else if (key > node->key)
-        {
-            if (node->right != nullptr)
-            {
-                return find_Private(key,node->right);
+        else if (key > node->key) {
+            if (node->right != nullptr) {
+                return find_Private(key, node->right);
             }
             return nullptr;
         }
-        else if (key < node->key)
-        {
-            if (node->left != nullptr)
-            {
+        else if (key < node->key) {
+            if (node->left != nullptr) {
                 return (find_Private(key, node->left));
             }
             return nullptr;
@@ -222,34 +230,31 @@ private:
     /*
     * Returns true if the item is found in the tree
     */
-    bool contains(const Value & item, BinaryNode *t) const {
+    bool contains(const Value &item, BinaryNode *t) const {
         // optional code
     }
 
     /*
     * Removes all elelements from the tree
     */
-    void makeEmpty(BinaryNode * & t) {
+    void makeEmpty(BinaryNode *&t) {
         // optional code
     }
 
     /*
     * Prints all the data from the tree in order based on key
     */
-    void printTree_Private(BinaryNode *t, std::ostream & out) const {
+    void printTree_Private(BinaryNode *t, std::ostream &out) const {
         //DONE write for lab 1
-        if (this->root == nullptr)
-        {
+        if (this->root == nullptr) {
             return;
         }
-        if (t->left != nullptr)
-        {
+        if (t->left != nullptr) {
             printTree_Private(t->left, out);
         }
         cout << t->key << " ";
-        if (t->right != nullptr)
-        {
-            printTree_Private(t->right,out);
+        if (t->right != nullptr) {
+            printTree_Private(t->right, out);
         }
 
     }
@@ -285,11 +290,10 @@ public:
     * returns true if it was found
     * returns false if it was not
     */
-    bool find(const KeyComparable & key , Value & founditem) const {
+    bool find(const KeyComparable &key, Value &founditem) const {
         //TODO calls private find lab 1
         BinaryNode *temp = find_Private(key, this->root);
-        if (temp != nullptr)
-        {
+        if (temp != nullptr) {
             founditem = temp->value;
             return true;
         }
@@ -299,7 +303,7 @@ public:
     /*
     * Returns true if the item is found in the tree
     */
-    bool contains(const KeyComparable & key) const {
+    bool contains(const KeyComparable &key) const {
         // optional code
         return false;
     }
@@ -307,7 +311,7 @@ public:
     /*
     * Returns true if tree has no nodes
     */
-    bool isEmpty() const{
+    bool isEmpty() const {
         // optional code
         return root == nullptr;
     }
@@ -315,9 +319,9 @@ public:
     /*
     * Prints all the data from the tree in order based on key
     */
-    void printTree(std::ostream & out = cout) const {
+    void printTree(std::ostream &out = cout) const {
         // DONE Calls the private printTree function
-        printTree_Private(this->root,out);
+        printTree_Private(this->root, out);
     }
 
     /*
@@ -333,18 +337,18 @@ public:
     *     All nodes to the left will be less
     *     All nodes to the right will be greater
     */
-    bool insert( Value value,  KeyComparable key) {
+    bool insert(Value value, KeyComparable key) {
         //DONE calls private remove
-        return insert_Private(value,key,this->root);
+        return insert_Private(value, key, this->root);
     }
 
     /*
     * Removes the nodes if it contains the given item
     */
-    void remove(const KeyComparable & key) {
+    void remove(const KeyComparable &key) {
         //TODO calls private remove
-        BinaryNode **temp;
-        remove(key,temp);
+        BinaryNode *temp = this->root;
+        remove(key, temp);
     }
 
 };  // end of BinarySearchTree class
