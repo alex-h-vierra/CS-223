@@ -6,7 +6,6 @@ using namespace std;
 template<typename KeyComparable, typename Value>
 class BinarySearchTree : BSTInterface<KeyComparable, Value> {
 private:
-
     /*
     * Private "Node" Class...for this implementation, the Pair is the Node
     */
@@ -15,15 +14,12 @@ private:
         KeyComparable key;
         Value value;
 
-        Pair *left;
-        Pair *right;
-
         //Initialize class members from constructor arguments
         //by using a member initializer list.
         //This method uses direct initialization, which is more
         //efficient than using assignment operators inside the constructor body.
-        Pair(KeyComparable &key, Value &value, Pair *left = nullptr, Pair *right = nullptr)
-                : value{value}, key{key}, left{left}, right{right} {
+        Pair(KeyComparable &key, Value &value)
+                : value{value}, key{key} {
             // empty constructor...member initializer is doing all the work
         }
 
@@ -32,7 +28,7 @@ private:
     // number of values stored in the tree
     int count = 0;
     // capacity of array holding the tree
-    int size = 25;
+    int size = 50;
     // the array that holds the pairs
     Pair **root = new Pair *[size];
 
@@ -40,32 +36,57 @@ private:
     * Prints the data of the trea in order based on the key to the output stream
     */
     void printTree(int index, std::ostream &out) const {
-        //  stub code: needs to be implemented
+        if (root[index] != nullptr) {
+            printTree(index * 2, out);
+            out << *(root[index]->value) << endl;
+            printTree(index * 2 + 1, out);
+        }
     }
 
 public:
     BinarySearchTree() {
-        //  stub code: needs to be implemented
+        for (int i = 0; i <= size; i++) {
+            root[i] = nullptr;
+        }
     }
 
     ~BinarySearchTree() {
-        //  stub code: needs to be implemented
+        //  stub code: needs to be implemented
+        for (int i = 0; i <= size; i++) {
+            delete root[i];
+        }
     }
 
     /*
     * Finds the node with the smallest element in the tree
     */
     const Value findMin() const {
-        //  stub code: needs to be implemented
-        return nullptr;
+        int i = 1;
+        while (root[i] != nullptr)
+        {
+            if (root[i * 2] == nullptr)
+            {
+                return root[i]->value;
+            }
+            i *= 2;
+        }
+        return root[i]->value;
     }
 
     /*
     * Finds the node with the largest element in the tree
     */
     const Value findMax() const {
-        //  stub code: needs to be implemented
-        return nullptr;
+        int i = 1;
+        while (root[i] != nullptr)
+        {
+            if (root[i * 2 + 1] == nullptr)
+            {
+                return root[i]->value;
+            }
+            i = i * 2 + 1;
+        }
+        return root[i]->value;
     }
 
     /*
@@ -75,7 +96,23 @@ public:
     * returns false if it was not
     */
     bool find(const KeyComparable &argKey, Value &founditem) const {
-        //  stub code: needs to be implemented
+        int i = 1;
+        while (root[i] != nullptr)
+        {
+            if (root[i]->key == argKey)
+            {
+                founditem = root[i]->value;
+                return true;
+            }
+            else if (root[i]->key > argKey)
+            {
+                i = i * 2;
+            }
+            else if(root[i]->key < argKey)
+            {
+                i = i * 2 + 1;
+            }
+        }
         return false;
     }
 
@@ -83,31 +120,33 @@ public:
     * Returns true if the item is found in the tree
     */
     bool contains(const KeyComparable &argKey) const {
-        //  stub code: needs to be implemented
-        return false;
+        int i = 1;
+        for (; root[i] != nullptr && root[i]->key != argKey; i = 2 * i +(root[i]->key < argKey));
+        return root[i] != nullptr;
     }
 
     /*
     * Returns true if tree has no nodes
     */
     bool isEmpty() const {
-        //  stub code: needs to be implemented
-        return root == nullptr;
+        //  stub code: needs to be implemented
+        return root[1] == nullptr;
     }
 
     /*
     * Prints all the data from the tree in order based on key
     */
     void printTree(std::ostream &out = cout) const {
-        printTree(0, out);
-        //  stub code: needs to be implemented
+        printTree(1, out);
     }
 
     /*
     * Removes all nodes from the tree
     */
     void makeEmpty() {
-        //  stub code: needs to be implemented
+        for (int i = 0; i <= size; count++) {
+            root[i] = nullptr;
+        }
     }
 
     /*
@@ -118,52 +157,59 @@ public:
     */
     bool insert(Value value, KeyComparable key) {
         Pair *node = new Pair(key, value);
-        Pair *iterator = *root;
-        if (count == 0) {
-            *root = node;
+        int i = 1;
+        if (isEmpty()) {
             count++;
+            root[i] = node;
+            cout << root[i]->key << " ";
             return true;
         }
-        while (iterator != nullptr) {
-            if (iterator->key > node->key) {
-                if (iterator->left == nullptr) {
-                    iterator->left = node;
+        while (i < size) {
+            //TODO fix expanding size so that it's not conflicting with other TODO
+            //however insert function is done just with a fixed size
+
+            if (root[i]->key > node->key) {
+                //This goes to the left child
+                if (root[i * 2] == nullptr) {
                     count++;
+                    root[i * 2] = node;
                     return true;
                 }
-                iterator = iterator->left;
+                i = i * 2;
             }
-            else if (iterator->key < node->key) {
-                if (iterator->right == nullptr) {
-                    iterator->right = node;
+            else if (root[i]->key < node->key) {
+                /*
+                 * TODO sig fault is caused from if statement not reading in spot 41 right
+                 * */
+                if (root[i * 2 + 1] == nullptr) {
                     count++;
+                    root[i * 2 + 1] = node;
                     return true;
                 }
-                iterator = iterator->right;
+                i = i * 2 + 1;
             }
             else {
-                delete[] node;
+                delete node;
                 return false;
             }
         }
         return false;
     }
 
-    /*
-    * Removes the nodes if it contains the given item
-    */
+/*
+* Removes the nodes if it contains the given item
+*/
     void remove(const KeyComparable &key) {
-        //  stub code: needs to be implemented
+        //  stub code: needs to be implemented
+        
     }
 
     int getSize() {
-        //  stub code: needs to be implemented
-        return 0;
+        return size;
     }
 
     int getCount() {
-        //  stub code: needs to be implemented
-        return 0;
+        return count;
     }
 
 };    // end of BinarySearchTree class
