@@ -131,7 +131,6 @@ public:
     * Returns true if tree has no nodes
     */
     bool isEmpty() const {
-        //  stub code: needs to be implemented
         return root[1] == nullptr;
     }
 
@@ -167,8 +166,6 @@ public:
             return true;
         }
         while (i < size) {
-            //TODO fix expanding size so that it's not conflicting with other TODO
-            //however insert function is done just with a fixed size
             if (i * 2 + 1 > size) {
                 checkSize(i * 2 + 1);
             }
@@ -182,9 +179,6 @@ public:
                 i = i * 2;
             }
             else if (root[i]->key < node->key) {
-                /*
-                 * TODO sig fault is caused from if statement not reading in spot 41 right
-                 * */
                 if (root[i * 2 + 1] == nullptr) {
                     count++;
                     root[i * 2 + 1] = node;
@@ -204,61 +198,58 @@ public:
 * Removes the nodes if it contains the given item
 */
     void remove(const KeyComparable &key) {
-        //  stub code: needs to be implemented
-        //no child
         Value temp;
         int iterator = 1;
         if (find(key, temp) == false) {
             return;
         }
-        if (root[iterator]->key == key) {
-            return;
-        }
         while (iterator <= size) {
-            if (key > root[iterator]->key) {
-                if (iterator * 2 > size)
-                {
-                    return;
+            if (root[iterator]->key > key) {
+                if (iterator * 2 <= size) {
+                    iterator = iterator * 2;
                 }
-                iterator = iterator * 2;
+                cout << "ID Number " << key << " Not Found" << endl;
             }
-            else if (key < root[iterator]->key){
-                if (iterator * 2 + 1 > size)
-                {
-                    return;
+            else if (root[iterator]->key < key) {
+                if (iterator * 2 + 1 <= size) {
+                    iterator = iterator * 2 + 1;
                 }
-                iterator = iterator * 2 + 1;
+                cout << "ID Number " << key << " Not Found" << endl;
             }
-            else{
-                if (root[iterator * 2] == nullptr && root[iterator * 2 + 1] == nullptr)
-                {
-                    delete root[iterator];
-                    count--;
-                    return;
+            else {
+                if (root[iterator * 2] == nullptr && root[iterator * 2 + 1] == nullptr) {
+                    root[iterator] == nullptr;
                 }
-                else if (root[iterator * 2] != nullptr && root[iterator * 2 + 1] != nullptr)
-                {
-                    return;
-                }
-                else
-                {
-                    if (root[iterator * 2] != nullptr){
-                        //left
+                else if (root[iterator * 2] != nullptr && root[iterator * 2 + 1] != nullptr) {
+                    Value max = findMax();
+                    root[iterator] = nullptr;
+                    for (int i = iterator * 2 + 1; i <= size; i * 2 + 1) {
+                        if (root[i]->value == max) {
+                            root[iterator] = root[i];
+                            root[i] = nullptr;
+                            count--;
+                            return;
+                        }
                     }
-                    else if (root[iterator * 2 + 1] != nullptr){
-                        //right
+                    system("Color 7c");
+                    cout << "Failed" << endl;
+                }
+                else {
+                    int i = iterator;
+                    root[iterator] = nullptr;
+                    if (root[iterator * 2] != nullptr) {
+                        while (i <= size) {
+                            if (root[i * 2] != nullptr)
+                        }
+                    }
+                    else if (root[iterator * 2 + 1] != nullptr) {
+                        while (i <= size) {
+
+                        }
                     }
                 }
             }
         }
-//        Pair *removalNode = new Pair(key, computerScientist);
-//        if (root[iterator] == removalNode)
-//        {
-//            cout << "cool" << endl;
-//        }
-        //two child
-        //one child
-
     }
 
     int getSize() {
@@ -289,4 +280,21 @@ public:
         root = temp;
     }
 
+    void orphans(int index) {
+        if (index * 2 <= size) {
+            if (root[index * 2] != nullptr) {
+                root[index] = root[index * 2];
+                root[index * 2] = nullptr;
+                orphans(index * 2);
+            }
+        }
+        if (index * 2 + 1 <= size) {
+            if (root[index * 2 + 1] != nullptr) {
+                root[index ] = root[index * 2 + 1];
+                root[index * 2 + 1] = nullptr;
+                orphans(index * 2 + 1);
+            }
+        }
+
+    }
 };    // end of BinarySearchTree class
