@@ -60,7 +60,7 @@ public:
 
     ~BinarySearchTree() {
         //  stub code: needs to be implemented
-        for (int i = 1; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             delete root[i];
         }
         delete[] root;
@@ -84,12 +84,12 @@ public:
     * Finds the node with the largest element in the tree
     */
     const Value findMax() const {
-        int i = 1;
+        int i = 1 * 2 + 1;
         while (root[i] != nullptr) {
-            if (root[i * 2 + 1] == nullptr) {
+            if (root[i * 2] == nullptr) {
                 return root[i]->value;
             }
-            i = i * 2 + 1;
+            i = i * 2;
         }
         return root[i]->value;
     }
@@ -166,7 +166,7 @@ public:
             return true;
         }
         while (i < size) {
-            if (i * 2 + 1 > size) {
+            if (i * 4 > size) {
                 checkSize(i * 2 + 1);
             }
             if (root[i]->key > node->key) {
@@ -205,47 +205,40 @@ public:
         }
         while (iterator <= size) {
             if (root[iterator]->key > key) {
-                if (iterator * 2 <= size) {
-                    iterator = iterator * 2;
-                }
-                cout << "ID Number " << key << " Not Found" << endl;
+                iterator = iterator * 2;
+
             }
             else if (root[iterator]->key < key) {
-                if (iterator * 2 + 1 <= size) {
-                    iterator = iterator * 2 + 1;
-                }
-                cout << "ID Number " << key << " Not Found" << endl;
+                iterator = iterator * 2 + 1;
             }
             else {
-                if (root[iterator * 2] == nullptr && root[iterator * 2 + 1] == nullptr) {
-                    root[iterator] == nullptr;
-                }
-                else if (root[iterator * 2] != nullptr && root[iterator * 2 + 1] != nullptr) {
-                    Value max = findMax();
+                if (root[iterator * 2] == nullptr && root[iterator * 2 + 1] == nullptr
+                    || iterator * 2 + 1 > size) {
                     root[iterator] = nullptr;
-                    for (int i = iterator * 2 + 1; i <= size; i * 2 + 1) {
+                    return;
+                }
+                else if (root[iterator * 2] != nullptr &&
+                         root[iterator * 2 + 1] != nullptr) {
+                    Value max = findMax();
+                    for (int i = iterator; i <= size; i++) {
                         if (root[i]->value == max) {
-                            root[iterator] = root[i];
-                            root[i] = nullptr;
+                            Pair *temp1 = new Pair(root[i]->key, root[i]->value);
+                            remove(root[i]->key);
+                            root[iterator] = nullptr;
+                            root[iterator] = temp1;
                             count--;
                             return;
                         }
                     }
-                    system("Color 7c");
-                    cout << "Failed" << endl;
                 }
                 else {
-                    int i = iterator;
-                    root[iterator] = nullptr;
                     if (root[iterator * 2] != nullptr) {
-                        while (i <= size) {
-                            if (root[i * 2] != nullptr)
-                        }
+                        orphan(iterator * 2);
+                        return;
                     }
-                    else if (root[iterator * 2 + 1] != nullptr) {
-                        while (i <= size) {
-
-                        }
+                    else {
+                        orphan(iterator * 2 + 1);
+                        return;
                     }
                 }
             }
@@ -263,7 +256,7 @@ public:
     void checkSize(const int futureSize) {
         int pastSize = size;
         while (futureSize > size) {
-            size = size * 2 + 1;
+            size = size * 4;
         }
         Pair **temp = new Pair *[size];
         for (int i = 0; i != pastSize; i++) {
@@ -280,21 +273,18 @@ public:
         root = temp;
     }
 
-    void orphans(int index) {
-        if (index * 2 <= size) {
-            if (root[index * 2] != nullptr) {
-                root[index] = root[index * 2];
-                root[index * 2] = nullptr;
-                orphans(index * 2);
+    void orphan(int index) {
+        if (index <= size) {
+            if (root[index * 2] != nullptr && root[index * 2 <= size]) {
+                orphan(index * 2);
+            }
+            root[index / 2] = root[index];
+            root[index] = nullptr;
+        }
+        if (index <= size) {
+            if (root[index * 2 + 1] != nullptr && root[index * 2 + 1 <= size]) {
+                orphan(index * 2 + 1);
             }
         }
-        if (index * 2 + 1 <= size) {
-            if (root[index * 2 + 1] != nullptr) {
-                root[index ] = root[index * 2 + 1];
-                root[index * 2 + 1] = nullptr;
-                orphans(index * 2 + 1);
-            }
-        }
-
     }
 };    // end of BinarySearchTree class
