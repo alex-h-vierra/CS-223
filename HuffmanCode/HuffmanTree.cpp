@@ -158,7 +158,7 @@ HuffmanTree::BinaryNode *HuffmanTree::buildTree(string frequencyText) {
     /*These two loops help combine and add up the
      * amount of how many are in the text
      * with the array size of 128 being the max ascii value*/
-    char fArray[128]{0};
+    int fArray[128]{0};
     for (int i = 0; i < frequencyText.size(); i++) {
         fArray[frequencyText[i]]++;
     }
