@@ -10,32 +10,18 @@ class PriorityQueue :  Queue<E> {
 private:
 
 	E *items;
-	unsigned int count = 0; // number of items
-
+	unsigned int count = 0;
 	bool(*compareFunction)(E, E);
+	void operator =(const PriorityQueue&) { }; 
+	PriorityQueue(const PriorityQueue&){ }; 
 
-	// Protect assignment
-	void operator =(const PriorityQueue&) 
-	{
-	
-	}; 
-
-	// Protect copy constructor
-	PriorityQueue(const PriorityQueue&)
-	{
-	
-	}; 
-
-	// Intialization helper method
 	void init() 
 	{  
 		this->items = new E[10]();
 		this->count = 0;
 	}
 
-	void removeall() { // Return link nodes to free store
-		
-	}
+	void removeall() { }
 
 	//void printInOrder(int index) {  // not sure if needed.
 	//	if (index > count) {
@@ -46,38 +32,19 @@ private:
 	//}
 
 public:
-	
-	// takes a function pointer to a compare function
-	// as a Parameter
 	PriorityQueue( bool(*func)(E, E) )
 	{
 		compareFunction = func;
 		init();
-	
 	} 
-
-	// Print queue contents
 	void print() const
 	{
 		for (int i = 1; i <= count; ++i) {
 			cout << items[i] << " ";
 		}
-
-
 	}
-
-	// Base destructor
-	 ~PriorityQueue() 
-	 {
-	 
-	 } 
-
-	// Reinitialize the queue. The user is responsible for
-	// reclaiming the storage used by the queue elements.
-	 void clear()
-	 {
-
-	 } 
+	 ~PriorityQueue() { } 
+	 void clear(){ } 
 
 	// Place an element at the position 
 	// based on its prioity of the queue.
